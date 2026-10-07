@@ -1,0 +1,18 @@
+{
+  "schema": "dev.woia.provider-manifest/v1",
+  "name": "woia-re-property-services",
+  "version": "0.5.0",
+  "origin": "native",
+  "authoring_profile": "thin",
+  "kind": "shared-provider",
+  "actions": [
+    "property-service.account.link",
+    "property-service.responsibility.record",
+    "property-service.responsibility.read",
+    "property-service.query",
+    "property-service.observation.record",
+    "property-service.round.evaluate"
+  ],
+  "adapters": [],
+  "semantic_contract": "woia-re-domain-contracts@v0.5.0"
+}

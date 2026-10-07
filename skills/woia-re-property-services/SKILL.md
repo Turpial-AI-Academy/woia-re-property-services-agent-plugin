@@ -1,55 +1,19 @@
 ---
 name: woia-re-property-services
-description: Source-attributed property service account responsibility observations and bounded round evaluation.
+description: Link property service accounts, record accepted responsibility and immutable observations, and evaluate collection rounds without sending notices or creating money.
 license: MIT
 ---
 
-# woia-re-property-services
+# Property Services
 
-## Operating flow
+Use for account linkage, scoped responsibility, source queries and day14/+72h/+48h evaluation. Do not use for payments, messaging or rights authority.
 
-~~~text
-DISCOVER -> DECIDE -> IMPLEMENT -> VALIDATE -> REPORT
-~~~
+1. Resolve current authenticated organization, actor, Task and exact operation/account/scope authority. Load [contract](references/contract.md) for source uncertainty, responsibility or financial consequences.
+2. Execute the pure [helper](scripts/services.mjs) with a separate host-resolved current context and explicit clock. Persist returned state atomically with expected-revision fencing; this module is not a datastore or qualified adapter.
+3. Retain original source observations. Failed/unavailable/stale status is UNKNOWN. Fresh queries append; duplicate delivery deduplicates without rewriting evidence.
+4. Account holder does not determine responsibility. Accepted effective-dated Subject/role/scope is separate. Ambiguity and dispute block collection.
+5. Customer Service/Communications alone execute permitted notices. Finance/Ledger alone accept and create authorized fees. Evaluation grants neither permission.
 
-## Purpose
+Actions: property-service.account.link, property-service.responsibility.record, property-service.responsibility.read, property-service.query, property-service.observation.record, property-service.round.evaluate.
 
-Source-attributed property service account responsibility observations and bounded round evaluation.
-
-## Minimum sufficient evidence
-
-Use a bounded path when an authoritative existing artifact/evidence set is healthy and the requested change is local and understood:
-
-1. identify the artifact/evidence, source candidate, and affected surface;
-2. load only supporting context and references needed for that surface;
-3. amend or re-evaluate the smallest coherent unit;
-4. verify affected behavior plus mandatory cross-cutting invariants;
-5. preserve unrelated valid artifacts/evidence and report what changed.
-
-Use the deep path for a new artifact, unclear scope or contradictory evidence, public API/event/schema changes, persisted data/migrations, authentication/authorization/secrets/signing/trust boundaries, deployment/rollback/availability risk, cross-provider dependency restructuring, unhealthy or unfamiliar conventions, missing durable required evidence, or a failed invariant that invalidates reused evidence. Load the references/checklists needed by those triggers and retain all required safety validation.
-
-## Discover
-
-Inspect actual repository/system state before changing it. Locate authoritative artifacts/evidence and identify affected standards, constraints, supported platforms, integrations, and user requirements. Expand context when a dependency, uncertainty, or deep-path trigger requires it.
-
-## Decide
-
-Select the smallest strategy that satisfies the capability. Preserve healthy existing standards. Do not infer policy from the author's workspace.
-
-## Implement
-
-Apply only authorized changes. Keep domain semantics independent from unrelated tooling.
-
-## Validate
-
-Run capability-appropriate checks and verify changed state. Reuse evidence only when it is durable, inspectable evidence of actual execution/observation with an identifiable candidate, checked surface, relevant inputs/environment, and outcome. Independently establish that it satisfies the gate being owned; prose claims or recollection are not execution evidence.
-
-A later mutation invalidates the checks whose coverage or inputs it affects. Rerun those checks and mandatory related invariants; preserve unaffected valid evidence. Reuse expensive runtime verification across an unchanged candidate and relevant environment. A new turn/session alone does not invalidate evidence. Execute or observe relevant checks when required evidence cannot be inspected or established. Skipped/unavailable checks are not PASS.
-
-## Report
-
-Report current state, source candidate, affected surface, decisions, changes, and exact usage/maintenance commands. Distinguish reusable evidence, invalidated evidence, freshly established evidence, and assumptions/inferences that are not evidence. Include remaining risks and uncertainties.
-
-## Detailed references
-
-Add focused files under `references/` only when more detail is needed and give each reference a concrete scope/risk/ambiguity load trigger. Load triggered safety references; a bounded amendment does not require every reference or full template replay. Add scripts/assets only when they materially improve deterministic execution.
+No live adapter is qualified. Query consumes a configured adapter observation, not an invented backend. Canonical domain relations/E2E remain in Domain Contracts. Operator E2E and Production Ready are separate gates.
