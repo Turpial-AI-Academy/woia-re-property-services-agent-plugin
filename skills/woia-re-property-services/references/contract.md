@@ -1,0 +1,13 @@
+# Source and responsibility contract
+
+Semantic contract: woia-re-domain-contracts@v0.5.0. Accepted provider ownership, Source Authority, authority/finance and engineering boundaries govern this implementation. Full canonical logical schemas and cross-domain E2Es remain in woia-re-domain-contracts; no hard intra-W2 dependency is introduced.
+
+ServiceAccount links Property/source/external account/lifecycle/evidence. Holder, owner, responsible Subject and payer differ. Responsibility requires competent acceptance reference, source, version, effective interval and complete n-ary account/scope/Subject/role. Overlapping current versions block evaluation. Original records are immutable.
+
+Every query carries account/cycle/round/source key/time/result/evidence. Raw source status is retained separately; failed/unavailable/stale queries immediately expose UNKNOWN. Freshness is organization configured, not guessed. Every access uses exact authority/policy/source refs. The host must authenticate and resolve current resources independently from the untrusted command, pass them as separate context, enforce purpose/field access and persist atomically. Resource refs supplied by an untrusted caller do not prove authority. No storage/backend or adapter integration is qualified.
+
+Round1 waits14 days after accepted cycle origin, round2 at least72h after preceding evaluation, round3 at least48h after round2. Fresh new observation after each preceding evaluation is mandatory. Due Work and business methodology own scheduling/contact timing; this reducer neither schedules nor dispatches. Current no debt gives NO_ACTION, no contact and no useless Task. Tenant debt gives Customer Service input; owner/agency/other debt gives internal Property Management resolution without tenant fee/contact. Unknown/disputed responsibility blocks collection. Shared/mixed responsibility resolves only an exact scoped role from an independently resolved accepted deterministic rule with source/version/digest/acceptance and account/scope bindings. Missing, malformed or duplicate scope allocations remain UNKNOWN; no shares or amounts are invented.
+
+Final unresolved tenant debt can emit a Finance review business key account+cycle+fee-policy-version+scope only when a configured effective policy includes formula/currency/rounding. It never computes a fee or creates a Charge. Finance must independently validate accepted trigger, Lease/policy applicability, exact authority, beneficiary/currency and one writer. Absent policy means no fee input.
+
+No contact dispatch, Charge, journal, Payment, DBMS, credentials or organization-private values are created.
