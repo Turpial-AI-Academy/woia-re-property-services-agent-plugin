@@ -19,6 +19,16 @@ function source(c, account,now) {
   need(Number.isFinite(m.max_age_ms) && m.max_age_ms>=0,'FRESHNESS_POLICY_REQUIRED');
   return m;
 }
+function acceptedResponsibility(c,r,context,now) {
+  const a=context.responsibility_acceptance;
+  need(a && a.org_id===c.org_id && a.account_id===c.account_id && a.scope_id===c.scope_id &&
+    a.subject_ref===r.subject_ref && a.role===r.role && a.acceptance_ref===r.acceptance_ref &&
+    a.source_ref===r.source_ref && a.version===r.version && a.policy_ref===c.authority.policy_ref &&
+    a.policy_version===c.authority.policy_version && a.current===true && a.revoked===false &&
+    a.conflict===false && str(a.authority_ref) && str(a.evidence_ref) && effective(a,now),
+    'RESPONSIBILITY_ACCEPTANCE_REQUIRED');
+  need(a.responsibility && same(a.responsibility,r),'RESPONSIBILITY_ACCEPTANCE_MISMATCH');
+}
 export function empty(org_id) { need(str(org_id),'ORG_REQUIRED'); return {org_id,revision:0,accounts:[],responsibilities:[],observations:[],evaluations:[]}; }
 export function execute(state,command,context) {
   const c=structuredClone(command), s=structuredClone(state), now=instant(c.now);
@@ -42,6 +52,7 @@ export function execute(state,command,context) {
       const r=c.responsibility;
       need(r && r.scope_id===c.scope_id && r.account_id===c.account_id && str(r.subject_ref)&&str(r.acceptance_ref)&&str(r.source_ref)&&str(r.version)&&['tenant','owner','agency','other','shared','unknown'].includes(r.role),'ACCEPTED_RESPONSIBILITY_REQUIRED');
       instant(r.effective_from); if(r.effective_until) need(instant(r.effective_until)>instant(r.effective_from),'INVALID_INTERVAL');
+      acceptedResponsibility(c,r,context,now);
       const prior=s.responsibilities.find(x=>x.account_id===r.account_id&&x.scope_id===r.scope_id&&x.version===r.version);
       if(prior) { need(same(prior,r),'RESPONSIBILITY_IMMUTABLE'); return {state:s,result:prior}; }
       s.responsibilities.push(r); result=r;
