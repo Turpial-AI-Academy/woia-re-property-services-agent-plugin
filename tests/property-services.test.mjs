@@ -4,7 +4,18 @@ import {empty,execute} from '../skills/woia-re-property-services/scripts/service
 const start='2026-01-01T00:00:00Z', now='2026-01-15T00:00:00Z';
 const ctx={org_id:'o',actor_ref:'actor',task_ref:'task',policy_ref:'p',policy_version:'1',source_map_ref:'map',source_map_version:'1',cycle_id:'cycle',cycle_started_at:start,cycle_acceptance_ref:'accepted-cycle'};
 function cmd(s,action,extra={}) {return {org_id:'o',account_id:'a',scope_id:'scope',department:'asset-management',now,action:'property-service.'+action,expected_revision:s.revision,authority:{org_id:'o',actor_ref:'actor',task_ref:'task',department:'asset-management',policy_ref:'p',policy_version:'1',action:'property-service.'+action,target_id:'a',scope_id:'scope',effective_from:start},source_map:{ref:'map',version:'1',org_id:'o',account_id:'a',source_ref:'utility',effective_from:start,max_age_ms:3600000},...extra};}
-function trusted(c) {return {...ctx,now:c.now,department:'asset-management',authority:structuredClone(c.authority),source_map:structuredClone(c.source_map),responsibility_rule:c.responsibility_rule};}
+function trusted(c) {
+  const t={...ctx,now:c.now,department:'asset-management',authority:structuredClone(c.authority),source_map:structuredClone(c.source_map),responsibility_rule:c.responsibility_rule};
+  if(c.action==='property-service.responsibility.record' && c.responsibility) t.responsibility_acceptance={
+    org_id:c.org_id,account_id:c.account_id,scope_id:c.scope_id,subject_ref:c.responsibility.subject_ref,
+    role:c.responsibility.role,acceptance_ref:c.responsibility.acceptance_ref,source_ref:c.responsibility.source_ref,
+    version:c.responsibility.version,policy_ref:c.authority.policy_ref,policy_version:c.authority.policy_version,
+    current:true,revoked:false,conflict:false,authority_ref:'competent-terms-authority',evidence_ref:'accepted-responsibility-evidence',
+    effective_from:c.responsibility.effective_from,effective_until:c.responsibility.effective_until,
+    responsibility:structuredClone(c.responsibility)
+  };
+  return t;
+}
 function run(s,action,extra={}) {const c=cmd(s,action,extra);return execute(s,c,trusted(c));}
 function setup(role='tenant') {
   let s=run(empty('o'),'account.link',{account:{account_id:'a',property_ref:'property',source_ref:'utility',external_account_id:'ext',lifecycle_scope:'active',evidence_ref:'ev'}}).state;
@@ -34,6 +45,31 @@ test('state remains immutable after denied operation',()=>{const s=setup(),befor
 for(const [label,modify] of [['org',c=>c.org_id='other'],['target',c=>c.authority.target_id='other'],['hold',c=>c.authority.hold=true],['expired',c=>c.authority.effective_until=start],['source',c=>c.source_map.source_ref='unselected']]) test('deny '+label,()=>{const s=setup(),c=cmd(s,label==='source'?'query':'responsibility.read'),t=trusted(c);modify(c);assert.throws(()=>execute(s,c,t));});
 test('independent current context required',()=>{assert.throws(()=>execute(setup(),cmd(setup(),'responsibility.read'),{...ctx,policy_version:'2'}),/CURRENT_RESOURCES_REQUIRED/);});
 test('Customer Service may not mutate account',()=>{const c=cmd(empty('o'),'account.link');c.department=c.authority.department='customer-service';assert.throws(()=>execute(empty('o'),c,ctx),/DEPARTMENT_MUTATION_DENIED/);});
+test('responsibility record requires independently resolved exact competent acceptance',()=>{
+  let s=run(empty('o'),'account.link',{account:{account_id:'a',property_ref:'property',source_ref:'utility',external_account_id:'ext',lifecycle_scope:'active',evidence_ref:'ev'}}).state;
+  const c=cmd(s,'responsibility.record',{responsibility:{account_id:'a',scope_id:'scope',subject_ref:'person',acceptance_ref:'owner-accepted',source_ref:'lease-version',version:'1',role:'tenant',effective_from:start}});
+  const t=trusted(c);
+  assert.doesNotThrow(()=>execute(s,c,t));
+  for(const mutate of [
+    x=>delete x.responsibility_acceptance,
+    x=>x.responsibility_acceptance.revoked=true,
+    x=>x.responsibility_acceptance.conflict=true,
+    x=>x.responsibility_acceptance.org_id='other',
+    x=>x.responsibility_acceptance.subject_ref='other',
+    x=>x.responsibility_acceptance.role='owner',
+    x=>x.responsibility_acceptance.acceptance_ref='other',
+    x=>x.responsibility_acceptance.source_ref='other',
+    x=>x.responsibility_acceptance.policy_version='2',
+    x=>x.responsibility_acceptance.responsibility={...x.responsibility_acceptance.responsibility,role:'owner'}
+  ]) { const bad=structuredClone(t); mutate(bad); assert.throws(()=>execute(s,c,bad),/RESPONSIBILITY_ACCEPTANCE/); }
+});
+test('caller-supplied acceptance reference cannot replace trusted accepted responsibility',()=>{
+  let s=run(empty('o'),'account.link',{account:{account_id:'a',property_ref:'property',source_ref:'utility',external_account_id:'ext',lifecycle_scope:'active',evidence_ref:'ev'}}).state;
+  const c=cmd(s,'responsibility.record',{responsibility:{account_id:'a',scope_id:'scope',subject_ref:'person',acceptance_ref:'forged',source_ref:'lease-version',version:'1',role:'tenant',effective_from:start}});
+  const t=trusted(c);
+  t.responsibility_acceptance.acceptance_ref='real-accepted-ref';
+  assert.throws(()=>execute(s,c,t),/RESPONSIBILITY_ACCEPTANCE_REQUIRED/);
+});
 test('day14 and subsequent fresh72h48h gates, fee input not Charge',()=>{
   let s=observe(setup()).state;
   assert.throws(()=>evaluate(s,{now:'2026-01-14T23:00:00Z'}),/ROUND_NOT_DUE/);
