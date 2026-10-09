@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "woia-re-property-services",
-  "version": "0.5.0",
+  "version": "0.5.6",
   "description": "Source-attributed property service account responsibility observations and bounded round evaluation.",
   "author": {
     "name": "Turpial AI Academy",
@@ -10,5 +10,8 @@
   "homepage": "https://github.com/Turpial-AI-Academy/woia-re-property-services-agent-plugin",
   "repository": "https://github.com/Turpial-AI-Academy/woia-re-property-services-agent-plugin",
   "license": "MIT",
-  "keywords": ["agent-plugin", "woia-re-property-services"]
+  "keywords": [
+    "agent-plugin",
+    "woia-re-property-services"
+  ]
 }

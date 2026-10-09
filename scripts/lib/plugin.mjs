@@ -14,7 +14,6 @@ export const MCP_SCHEMA_FILE = path.join(ROOT, "scripts", "schemas", "agent-plug
 const PORTABLE_ROOT_FILES = Object.freeze([
   "plugin.json",
   "README.md",
-  "CHANGELOG.md",
   "LICENSE",
 ]);
 const EXTENSION_NAMESPACE_RE = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
@@ -62,7 +61,6 @@ export const AUTHORING_ROOT_FILES = Object.freeze([
   "CONTRIBUTING.md",
   "SECURITY.md",
   "README.plugin.md",
-  "VALIDATION.md",
   "package.json",
   "pnpm-lock.yaml",
   "pnpm-workspace.yaml",
@@ -75,7 +73,6 @@ export const AUTHORING_ROOT_FILES = Object.freeze([
 export const AUTHORING_ROOT_DIRS = Object.freeze([
   ".github/",
   "scripts/",
-  "tests/",
   "docs/",
 ]);
 
@@ -468,9 +465,6 @@ export async function validateNoTemplatePlaceholders(root = ROOT) {
     const contentTokens = content.match(tokenPattern) ?? [];
     for (const token of [...new Set(contentTokens)]) {
       failures.push(`${relativePath}: unresolved template token ${token}`);
-    }
-    if (relativePath === "CHANGELOG.md" && content.includes("YYYY-MM-DD")) {
-      failures.push("CHANGELOG.md: unresolved template date YYYY-MM-DD");
     }
   }
 

@@ -4,7 +4,6 @@
 
 - update `plugin.json.version`;
 - update `package.json.version`;
-- add the matching first changelog heading;
 - regenerate portable checksums only if retaining that optional source diagnostic;
 - run normal and extended gates as appropriate.
 

@@ -1,7 +1,7 @@
 {
   "schema": "dev.woia.provider-manifest/v1",
   "name": "woia-re-property-services",
-  "version": "0.5.0",
+  "version": "0.5.6",
   "origin": "native",
   "authoring_profile": "thin",
   "kind": "shared-provider",

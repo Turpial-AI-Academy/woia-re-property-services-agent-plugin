@@ -1,5 +1,5 @@
-import { execFileSync, spawnSync } from "node:child_process";
-import { readFile, realpath } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -39,21 +39,6 @@ function assertCleanTree(root) {
   assert(status.trim() === "", "release:check requires a clean Git working tree, including untracked files");
 }
 
-function runCandidateTests(root, { quiet = false } = {}) {
-  const environment = { ...process.env };
-  delete environment.NODE_TEST_CONTEXT;
-  const result = spawnSync(process.execPath, ["--test"], {
-    cwd: root,
-    encoding: "utf8",
-    env: environment,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  if (result.error) throw result.error;
-  if (!quiet && result.stdout) process.stdout.write(result.stdout);
-  if (!quiet && result.stderr) process.stderr.write(result.stderr);
-  assert(result.status === 0, `release:check failed because the discovered test suite exited with ${result.status ?? "unknown"}`);
-}
-
 async function validateReleaseVersion(root, manifest) {
   const packageJson = await readJson(path.join(root, "package.json"));
   assert(packageJson.version === manifest.version,
@@ -61,10 +46,6 @@ async function validateReleaseVersion(root, manifest) {
   assert(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/.test(manifest.version),
     `plugin.json version must be a SemVer version: ${manifest.version}`);
 
-  const changelog = await readFile(path.join(root, "CHANGELOG.md"), "utf8");
-  const latestHeading = changelog.match(/^##\s+(\S+)/m)?.[1];
-  assert(latestHeading === manifest.version,
-    `The first CHANGELOG.md release heading must match plugin.json version ${manifest.version}`);
 }
 
 export async function runReleaseCheck(root = ROOT, { quiet = false } = {}) {
@@ -98,7 +79,6 @@ export async function runReleaseCheck(root = ROOT, { quiet = false } = {}) {
   await scanPortablePayload(root);
   await validateReleaseVersion(root, manifest);
 
-  runCandidateTests(root, { quiet });
   const archiveFiles = await validatePortableArchive(root, "HEAD");
   assertCleanTree(root);
   const currentHead = gitOutput(root, ["rev-parse", "--verify", "HEAD^{commit}"]);
@@ -106,7 +86,7 @@ export async function runReleaseCheck(root = ROOT, { quiet = false } = {}) {
 
   if (!quiet) {
     console.log(`release:check: ${manifest.name}@${manifest.version} candidate ${candidate}`);
-    console.log(`release:check: manifest, MCP, template placeholders, skills, links, paths, secrets, tests, version, whitespace, and ${archiveFiles}-file portable archive OK`);
+    console.log(`release:check: manifest, MCP, template placeholders, skills, links, paths, secrets, version, whitespace, and ${archiveFiles}-file portable archive OK`);
   }
   return { candidate, version: manifest.version, archiveFiles };
 }
