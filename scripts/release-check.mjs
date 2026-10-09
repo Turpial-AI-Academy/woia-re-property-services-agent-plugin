@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { realpath } from "node:fs/promises";
 import path from "node:path";
@@ -7,6 +8,7 @@ import {
   assert,
   readJson,
   scanPortablePayload,
+  validateChecksums,
   validateManifest,
   validateMarkdownLinks,
   validateMcp,
@@ -78,6 +80,7 @@ export async function runReleaseCheck(root = ROOT, { quiet = false } = {}) {
   await validateRootSafety(root);
   await scanPortablePayload(root);
   await validateReleaseVersion(root, manifest);
+  if (existsSync(path.join(root, "CHECKSUMS.sha256"))) await validateChecksums(root);
 
   const archiveFiles = await validatePortableArchive(root, "HEAD");
   assertCleanTree(root);

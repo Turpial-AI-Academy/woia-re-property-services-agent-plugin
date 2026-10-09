@@ -1,6 +1,6 @@
 # Source and responsibility contract
 
-Semantic contract: woia-re-domain-contracts@v0.5.6. Accepted provider ownership, Source Authority, authority/finance and engineering boundaries govern this implementation. Full canonical logical schemas and cross-domain E2Es remain in woia-re-domain-contracts; no hard intra-dependency is introduced.
+Semantic contract: woia-re-domain-contracts@v0.5.7. Accepted provider ownership, Source Authority, authority/finance and engineering boundaries govern this implementation. Full canonical logical schemas and cross-domain E2Es remain in woia-re-domain-contracts; no hard intra-dependency is introduced.
 
 ServiceAccount links Property/source/external account/lifecycle/evidence. Holder, owner, responsible Subject and payer differ. Responsibility requires competent acceptance reference, source, version, effective interval and complete n-ary account/scope/Subject/role. Overlapping current versions block evaluation. Original records are immutable.
 
